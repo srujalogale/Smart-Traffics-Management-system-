@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smart Traffic Management Design System - Traffic control inspired colors */
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 210 12% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 12% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 12% 8%;
+
+    /* Traffic tech blue primary */
+    --primary: 210 100% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 15% 93%;
+    --secondary-foreground: 210 12% 16%;
+
+    --muted: 210 15% 95%;
+    --muted-foreground: 210 8% 50%;
+
+    --accent: 210 15% 93%;
+    --accent-foreground: 210 12% 16%;
+
+    /* Traffic light colors */
+    --traffic-red: 0 85% 55%;
+    --traffic-amber: 45 100% 55%;
+    --traffic-green: 120 65% 45%;
+    
+    /* Professional gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 45%), hsl(220 90% 60%));
+    --gradient-traffic: linear-gradient(90deg, hsl(var(--traffic-red)), hsl(var(--traffic-amber)), hsl(var(--traffic-green)));
+    --gradient-tech: linear-gradient(135deg, hsl(210 25% 95%), hsl(210 20% 98%));
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 210 20% 88%;
+    --input: 210 20% 92%;
+    --ring: 210 100% 45%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 210 15% 6%;
+    --foreground: 210 15% 95%;
+
+    --card: 210 15% 8%;
+    --card-foreground: 210 15% 95%;
+
+    --popover: 210 15% 8%;
+    --popover-foreground: 210 15% 95%;
+
+    --primary: 210 100% 60%;
+    --primary-foreground: 210 15% 6%;
+
+    --secondary: 210 10% 15%;
+    --secondary-foreground: 210 15% 85%;
+
+    --muted: 210 10% 12%;
+    --muted-foreground: 210 8% 65%;
+
+    --accent: 210 10% 15%;
+    --accent-foreground: 210 15% 85%;
+
+    /* Dark mode traffic colors */
+    --traffic-red: 0 85% 60%;
+    --traffic-amber: 45 100% 60%;
+    --traffic-green: 120 65% 50%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 210 15% 95%;
+
+    --border: 210 10% 18%;
+    --input: 210 10% 15%;
+    --ring: 210 100% 60%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
