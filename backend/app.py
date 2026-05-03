@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import threading
 import time
-import random
 from ultralytics import YOLO
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
@@ -18,10 +17,12 @@ print("✅ YOLOv8 model loaded.")
 
 VEHICLE_CLASSES = ['car', 'bus', 'truck', 'motorcycle', 'motorbike']
 
-# ─── Camera Setup ─────────────────────────────────────────────────────────────
-cap = cv2.VideoCapture(0)
-CAMERA_AVAILABLE = cap.isOpened()
-print(f"📷 Camera: {'Connected ✅' if CAMERA_AVAILABLE else 'Not found ⚠️'}")
+# ─── Camera Setup (lazy — initialized inside generate_frames thread) ──────────
+# NOTE: Do NOT call cv2.VideoCapture at module level on macOS — it causes Flask's
+# threaded server to deadlock waiting for OS camera permissions before sockets bind.
+cap = None
+CAMERA_AVAILABLE = False
+print("📷 Camera: will probe when first video frame is requested")
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 CORRIDOR_LENGTH        = 6      # total signals in the corridor
@@ -29,7 +30,7 @@ AMBULANCE_ADVANCE_SECS = 8      # seconds before ambulance moves to next signal
 PRE_GREEN_COUNT        = 3      # how many signals AHEAD to pre-clear green
 
 # ─── Shared State ─────────────────────────────────────────────────────────────
-state_lock = threading.Lock()
+state_lock = threading.RLock()
 
 lane_counts = {
     'lane1': 0,
@@ -224,8 +225,20 @@ def traffic_scheduler_thread():
 threading.Thread(target=traffic_scheduler_thread, daemon=True).start()
 
 def generate_frames():
-    global corridor_state
-    
+    global corridor_state, cap, CAMERA_AVAILABLE
+
+    # ── Lazy camera init (runs safely inside Flask worker thread on macOS) ──
+    if cap is None:
+        _cap = cv2.VideoCapture(0)
+        if _cap.isOpened():
+            cap = _cap
+            CAMERA_AVAILABLE = True
+            print("📷 Camera: Connected ✅")
+        else:
+            _cap.release()
+            CAMERA_AVAILABLE = False
+            print("📷 Camera: Not found ⚠️ — running in simulation/placeholder mode")
+
     while True:
         if not CAMERA_AVAILABLE:
             placeholder = np.zeros((500, 1020, 3), dtype=np.uint8)
@@ -440,8 +453,9 @@ if __name__ == '__main__':
     print("  🚦 Smart Traffic Management System v2.1")
     print("═" * 60)
     print(f"  📡 API:      http://0.0.0.0:5000")
-    print(f"  📷 Camera:   {'Connected ✅' if CAMERA_AVAILABLE else 'Not found ⚠️ (placeholder mode)'}")
+    print(f"  📷 Camera:   Lazy-init (probed on first /video_feed request)")
     print(f"  🤖 Model:    YOLOv8n (COCO 80 classes)")
     print(f"  🚨 Corridor: {CORRIDOR_LENGTH} signals  |  advance every {AMBULANCE_ADVANCE_SECS}s")
     print("═" * 60 + "\n")
-    app.run(host='0.0.0.0', port=5000, threaded=True, debug=False)
+    # Use_reloader=False is required on macOS to prevent OpenCV fork() issues.
+    app.run(host='0.0.0.0', port=5000, threaded=True, debug=False, use_reloader=False)
